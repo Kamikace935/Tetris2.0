@@ -1,0 +1,63 @@
+/*body {*/
+/*    position: relative;*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*}*/
+
+html,
+body,
+.container-fluid,
+.row,
+.col-3,
+.col-6 {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.timer{
+    height: 70px;
+    width: 180px;
+    border: 4px solid silver;
+}
+
+.score {
+    height: 70px;
+    width: 180px;
+    border: 4px solid silver;
+}
+
+.fondo1 {
+    background-image: url('fondo1.jpg');
+    background-size: cover;
+}
+
+.fondo2 {
+    background-image: url('fondo3.jpg');
+    background-size: cover;
+}
+
+.easy {
+    background-image: url('megapaseo.gif');
+    background-size: cover;
+}
+
+.medium {
+    background-image: url('megafondo.gif');
+    background-size: cover;
+}
+
+.hard {
+    background-image: url('megacono.gif');
+    background-size: cover;
+}
+
+#playground {
+    width: calc(7 * 40px);
+    height: calc(18 * 40px);
+    background-color: silver;
+    position: relative;
+
+}
+
+

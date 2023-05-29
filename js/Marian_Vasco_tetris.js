@@ -12,18 +12,18 @@ const size = 40;
 const width = 7;
 const height = 18;
 // Contiene los parametros de las diferentes dificultades
-// const difficulties = [
-//     [35, 15, 8],
-//     [120, 90, 60],
-//     ["easy", "medium", "hard"]
-// ]
+const difficulties = [
+    [35, 15, 8],
+    [120, 90, 60],
+    ["easy", "medium", "hard"]
+]
 
 let drop = 0;
-let rAF;
+let rAF = null;
 let score = 0;
-let frames = 35; // Mantiene un seguimiento de los frames de animación para poder cancelarlo
-//let time = difficulties[1][difficulty];
-// document.body.className = difficulties[2][difficulty];
+let frames = difficulties[0][difficulty]; // Mantiene un seguimiento de los frames de animación para poder cancelarlo
+let time = difficulties[1][difficulty];
+document.body.className = difficulties[2][difficulty];
 let gameOver = false;
 
 const canvasTimer = document.getElementById("timer");
@@ -133,35 +133,36 @@ function showGameOver() {
     //@see https://developer.mozilla.org/en-US/docs/Web/API/Window/cancelAnimationFrame
     cancelAnimationFrame(rAF);
     //@see https://developer.mozilla.org/en-US/docs/Web/API/clearInterval
-    // clearInterval(timer);
+    clearInterval(timer);
     gameOver = true;
 
     alert("GAME OVER\n Pulsa enter para guardar tu puntuación y volver a la pagina de inicio");
     // Añadir eventListener en el documento para que guarde el resultado con un intro
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Enter') {
-            // let ranking = JSON.parse(localStorage.getItem('Ranking')) || [];
-            // ranking.push(getScore());
-            // localStorage.setItem('Ranking', JSON.stringify(ranking));
-            // window.location.href = "Marian_Vasco_index.html";
-            alert(getScore());
+            let ranking = JSON.parse(localStorage.getItem('Ranking')) || [];
+            let data = getScore()
+            ranking.push(data);
+            localStorage.setItem('Ranking', JSON.stringify(ranking));
+            window.location.href = "Marian_Vasco_index.html";
         }
     })
 }
 
 // Recoge toda la información de la partida del jugador y la devuelve como un objeto
 function getScore() {
-    let nick = prompt("Introduce tu nick")
+    let nick = prompt("Introduce tu nick");
+
     if (nick === "") {
         nick = "Unknonw";
     }
-    return nick;
-    // return {
-    //     nick: nick,
-    //     score: score,
-    //     time: formatTime(time),
-    //     difficulty: difficulty
-    // }
+
+    return {
+        nick: nick,
+        score: score,
+        time: formatTime(time),
+        difficulty: difficulty
+    }
 }
 
 function drawTetromino(coordinates, type) {
@@ -240,6 +241,7 @@ function checkDownMove(dummy, tetromino) {
 
     for (let i = 0; i < dummy.length; i++) {
         if(dummy[i][0] === 18) {
+            checkPlayfield();
             getTetromino()
             return false
         }else if(playfield[dummy[i][0]][dummy[i][1]] !== 0) {
@@ -247,6 +249,7 @@ function checkDownMove(dummy, tetromino) {
                 showGameOver()
             }
 
+            checkPlayfield();
             getTetromino()
             return false
         }
@@ -284,25 +287,26 @@ function moveDown() {
 
 function checkPlayfield() {
     let count = 0
-    let lastPositon = 0
+    let completeRows = [];
 
     for (let row = 0; row < playfield.length; row++) {
-        if(-1 === playfield[row].indexOf(0)) {
-            lastPositon = row
+        if (playfield[row].every(cell => cell !== 0)) {
+            completeRows.push(row);
             count++
         }
     }
 
-    if(count > 0) {
-        playfield.splice(lastPositon-count,count)
-        console.log(lastPositon)
-        console.log(count)
-        for (let i = 0; i < count; i++) {
-            playfield.unshift(createEmptyRow());
+    if (completeRows.length > 0) {
+        for (let i = completeRows.length - 1; i >= 0; i--) {
+            playfield.splice(completeRows[i], 1);
         }
 
-        //increaseMarkerAndTime(count);
+        for (let i = 0; i < completeRows.length; i++) {
+            playfield.unshift(createEmptyRow());
+        }
     }
+
+    increaseMarkerAndTime(count);
 }
 
 //@see https://tetris.fandom.com/wiki/Scoring
@@ -358,7 +362,7 @@ function renderRow(posY, row) {
 
 function renderMatrix() {
     clean();
-    checkPlayfield();
+
     drawTetromino(tetromino.coordinates,tetromino.type);
 
     for (let i = 0; i < height; i++) {
@@ -446,7 +450,7 @@ rAF = requestAnimationFrame(start);
 
 //@see https://developer.mozilla.org/en-US/docs/Web/API/setInterval#examples
 //Inicia el temporizador
-//const timer = setInterval(countDown, 1000);
+const timer = setInterval(countDown, 1000);
 
 // Inicia el contador de puntos
-//increaseMarkerAndTime(0);
+increaseMarkerAndTime(0);
